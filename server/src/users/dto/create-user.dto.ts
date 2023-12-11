@@ -8,7 +8,6 @@ import {
   IsIn,
   Length,
 } from 'class-validator';
-import { Authority } from '../user.entity';
 
 const StrongPasswordOptions: IsStrongPasswordOptions = {
   minLength: 8,
@@ -37,5 +36,5 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsIn(['editor', 'admin'])
-  authority: Authority;
+  authority: string;
 }
