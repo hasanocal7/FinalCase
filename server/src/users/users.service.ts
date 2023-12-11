@@ -2,6 +2,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
 import { Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
+import { PassThrough } from 'stream';
 
 @Injectable()
 export class UsersService {
@@ -63,5 +64,37 @@ export class UsersService {
       id: id,
     });
     return result.result;
+  }
+
+  async login(email: string, password: string) {
+    try {
+      const user = await this.elasticsearchService.search({
+        index: this.index,
+        query: {
+          bool: {
+            must: [
+              {
+                match: {
+                  email: email['email'],
+                },
+              },
+              {
+                match: {
+                  password: password['password'],
+                },
+              },
+            ],
+          },
+        },
+      });
+
+      if (user.hits.total === 0) {
+        return null;
+      }
+
+      return user.hits.hits[0]._id;
+    } catch (error) {
+      throw new Error(error.message);
+    }
   }
 }
