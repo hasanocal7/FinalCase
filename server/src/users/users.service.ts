@@ -1,38 +1,67 @@
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { User } from './user.entity';
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, InsertQueryBuilder, Repository } from 'typeorm';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Injectable()
 export class UsersService {
-  constructor(
-    @InjectRepository(User)
-    private readonly usersRepository: Repository<User>,
-  ) {}
+  index = 'search-users';
+  constructor(private elasticsearchService: ElasticsearchService) {}
 
-  async create(createUserDto: CreateUserDto): Promise<User> {
-    const user = this.usersRepository.create(createUserDto);
-    await this.usersRepository.save(user);
-    return user;
+  async create(createUserDto: CreateUserDto) {
+    const userBody = {
+      name: createUserDto.name,
+      email: createUserDto.email,
+      password: createUserDto.password,
+      authority: createUserDto.authority,
+    };
+
+    await this.elasticsearchService.index({
+      index: this.index,
+      document: userBody,
+    });
+
+    return userBody;
   }
 
-  async findAll(): Promise<User[]> {
-    const users = await this.usersRepository.find();
-    return users;
+  async findAll() {
+    const users = await this.elasticsearchService.search({
+      index: this.index,
+      query: {
+        match_all: {},
+      },
+    });
+    let result = users.hits.hits;
+    return result.map((user) => user._source);
   }
 
-  async findOne(id: number): Promise<User | null> {
-    const user = await this.usersRepository.findOneBy({ id });
-    return user;
+  async findOne(id: string) {
+    const user = await this.elasticsearchService.search({
+      index: this.index,
+      query: {
+        match: {
+          _id: id,
+        },
+      },
+    });
+    return user.hits.hits[0]._source;
   }
 
-  async update(id: number, updateUserDto: UpdateUserDto): Promise<any> {
-    await this.usersRepository.update(id, updateUserDto);
+  async update(id: string, updateUserDto: UpdateUserDto) {
+    const result = await this.elasticsearchService.update({
+      index: this.index,
+      id: id,
+      doc: updateUserDto,
+    });
+
+    return result.result;
   }
 
-  async delete(id: number): Promise<void> {
-    await this.usersRepository.delete(id);
+  async delete(id: string) {
+    const result = await this.elasticsearchService.delete({
+      index: this.index,
+      id: id,
+    });
+    return result.result;
   }
 }
