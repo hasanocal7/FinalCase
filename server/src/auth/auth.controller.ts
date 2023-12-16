@@ -29,7 +29,10 @@ export class AuthController {
   async Login(@Body() body: { email: string; password: string }) {
     try {
       const Tokens = await this.authService.signIn(body);
-      return { accessToken: Tokens.accessToken };
+      return {
+        accessToken: Tokens.accessToken,
+        refreshToken: Tokens.refreshToken,
+      };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
