@@ -1,3 +1,8 @@
+<<<<<<< HEAD
+import { Public } from './auth.guard';
+import { AuthService } from './auth.service';
+import { Body, Controller, Post, Get, Request } from '@nestjs/common';
+=======
 import { CreateUserDto } from '../users/dto/create-user.dto';
 import { Response } from 'express';
 import { Public } from './auth.guard';
@@ -13,12 +18,18 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
+>>>>>>> main
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
+<<<<<<< HEAD
+  @Post('login')
+  async Login(@Body() email: string, @Body() password: string) {
+    return await this.authService.signIn(email, password);
+=======
   @Post('register')
   async createUser(@Body() createDto: CreateUserDto) {
     return this.authService.signUp(createDto);
@@ -36,12 +47,15 @@ export class AuthController {
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
+>>>>>>> main
   }
 
   @Get('home')
   getHome(@Request() req) {
     return req.user;
   }
+<<<<<<< HEAD
+=======
 
   @Post('refresh')
   async rotateRefreshToken(@Res() res: Response, @Req() req: Request) {
@@ -65,4 +79,5 @@ export class AuthController {
       throw new UnauthorizedException(error);
     }
   }
+>>>>>>> main
 }
