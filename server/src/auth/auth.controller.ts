@@ -1,3 +1,4 @@
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { Public } from './auth.guard';
 import { AuthService } from './auth.service';
 import {
@@ -7,7 +8,9 @@ import {
   Get,
   Request,
   UnauthorizedException,
+  Req,
 } from '@nestjs/common';
+import { v4 as uuidv4 } from 'uuid';
 
 @Controller('auth')
 export class AuthController {
@@ -27,8 +30,35 @@ export class AuthController {
     }
   }
 
+  @Post('register')
+  async createUser(@Body() createDto: CreateUserDto) {
+    return this.authService.signUp(createDto);
+  }
+
   @Get('home')
   getHome(@Request() req) {
     return req.user;
+  }
+
+  @Post('refresh')
+  async rotateRefreshToken(@Req() req: Request) {
+    try {
+      const oldRefreshToken = req.headers['authorization'].split(' ')[1];
+      const decodedToken =
+        await this.authService.decodeRefreshToken(oldRefreshToken);
+      const TokenId = uuidv4();
+      const accessToken = await this.authService.createAccessToken(
+        decodedToken['UserId'],
+      );
+      const refreshToken = await this.authService.createRefreshToken(
+        decodedToken['UserId'],
+        TokenId,
+      );
+      //localStorage.removeItem('refreshToken');
+      //localStorage.setItem('refreshToken', refreshToken);
+      return { accessToken: accessToken };
+    } catch (error) {
+      throw new UnauthorizedException(error);
+    }
   }
 }
