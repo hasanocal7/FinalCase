@@ -64,4 +64,15 @@ export class UsersService {
     });
     return result.result;
   }
+  async login(body: object) {
+    let results = await this.elasticsearchService.search({
+      index: this.index,
+      query: {
+        match_all: {},
+      },
+    });
+    const users = results.hits.hits;
+    const user = users.find((user) => user._source['email'] === body['email']);
+    return user._id;
+  }
 }
