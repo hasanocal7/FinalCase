@@ -65,36 +65,4 @@ export class UsersService {
     });
     return result.result;
   }
-
-  async login(email: string, password: string) {
-    try {
-      const user = await this.elasticsearchService.search({
-        index: this.index,
-        query: {
-          bool: {
-            must: [
-              {
-                match: {
-                  email: email['email'],
-                },
-              },
-              {
-                match: {
-                  password: password['password'],
-                },
-              },
-            ],
-          },
-        },
-      });
-
-      if (user.hits.total === 0) {
-        return null;
-      }
-
-      return user.hits.hits[0]._id;
-    } catch (error) {
-      throw new Error(error.message);
-    }
-  }
 }
