@@ -8,8 +8,13 @@ export class AuthController {
 
   @Public()
   @Post('login')
-  async Login(@Body() email: string, @Body() password: string) {
-    return await this.authService.signIn(email, password);
+  async Login(@Body() body: { email: string; password: string }) {
+    try {
+      const Tokens = await this.authService.signIn(body);
+      return { accessToken: Tokens.accessToken };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
   }
 
   @Get('home')
