@@ -1,6 +1,13 @@
 import { Public } from './auth.guard';
 import { AuthService } from './auth.service';
-import { Body, Controller, Post, Get, Request } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  Get,
+  Request,
+  UnauthorizedException,
+} from '@nestjs/common';
 
 @Controller('auth')
 export class AuthController {
@@ -11,7 +18,10 @@ export class AuthController {
   async Login(@Body() body: { email: string; password: string }) {
     try {
       const Tokens = await this.authService.signIn(body);
-      return { accessToken: Tokens.accessToken };
+      return {
+        accessToken: Tokens.accessToken,
+        refreshToken: Tokens.refreshToken,
+      };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
