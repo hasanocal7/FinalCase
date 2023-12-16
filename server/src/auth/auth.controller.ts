@@ -1,10 +1,4 @@
-<<<<<<< HEAD
-import { Public } from './auth.guard';
-import { AuthService } from './auth.service';
-import { Body, Controller, Post, Get, Request } from '@nestjs/common';
-=======
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { Response } from 'express';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { Public } from './auth.guard';
 import { AuthService } from './auth.service';
 import {
@@ -13,27 +7,14 @@ import {
   Post,
   Get,
   Request,
-  Res,
-  Req,
   UnauthorizedException,
+  Req,
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
->>>>>>> main
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
-
-  @Public()
-<<<<<<< HEAD
-  @Post('login')
-  async Login(@Body() email: string, @Body() password: string) {
-    return await this.authService.signIn(email, password);
-=======
-  @Post('register')
-  async createUser(@Body() createDto: CreateUserDto) {
-    return this.authService.signUp(createDto);
-  }
 
   @Public()
   @Post('login')
@@ -47,37 +28,37 @@ export class AuthController {
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
->>>>>>> main
+  }
+
+  @Post('register')
+  async createUser(@Body() createDto: CreateUserDto) {
+    return this.authService.signUp(createDto);
   }
 
   @Get('home')
   getHome(@Request() req) {
     return req.user;
   }
-<<<<<<< HEAD
-=======
 
   @Post('refresh')
-  async rotateRefreshToken(@Res() res: Response, @Req() req: Request) {
+  async rotateRefreshToken(@Req() req: Request) {
     try {
       const oldRefreshToken = req.headers['authorization'].split(' ')[1];
       const decodedToken =
         await this.authService.decodeRefreshToken(oldRefreshToken);
       const TokenId = uuidv4();
+      const accessToken = await this.authService.createAccessToken(
+        decodedToken['UserId'],
+      );
       const refreshToken = await this.authService.createRefreshToken(
         decodedToken['UserId'],
         TokenId,
       );
       //localStorage.removeItem('refreshToken');
       //localStorage.setItem('refreshToken', refreshToken);
-      res.json({
-        accessToken: await this.authService.createAccessToken(
-          decodedToken['UserId'],
-        ),
-      });
+      return { accessToken: accessToken };
     } catch (error) {
       throw new UnauthorizedException(error);
     }
   }
->>>>>>> main
 }

@@ -10,6 +10,7 @@ const AccessTokenSignOptions: JwtSignOptions = {
 const RefreshTokenSignOptions: JwtSignOptions = {
   expiresIn: '1d',
 };
+
 @Injectable()
 export class AuthService {
   constructor(
