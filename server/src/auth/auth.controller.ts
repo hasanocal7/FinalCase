@@ -46,16 +46,9 @@ export class AuthController {
       const oldRefreshToken = req.headers['authorization'].split(' ')[1];
       const decodedToken =
         await this.authService.decodeRefreshToken(oldRefreshToken);
-      const TokenId = uuidv4();
       const accessToken = await this.authService.createAccessToken(
         decodedToken['UserId'],
       );
-      const refreshToken = await this.authService.createRefreshToken(
-        decodedToken['UserId'],
-        TokenId,
-      );
-      //localStorage.removeItem('refreshToken');
-      //localStorage.setItem('refreshToken', refreshToken);
       return { accessToken: accessToken };
     } catch (error) {
       throw new UnauthorizedException(error);
