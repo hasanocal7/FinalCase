@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Factory } from './factories.entity';
-import { Repository } from 'typeorm';
+import { EntityManager, Repository, TableColumn } from 'typeorm';
 import { CreateFactoryDto } from './dto/create-factory.dto';
 import { UpdateFactoryDto } from './dto/update-factory.dto';
 
@@ -9,6 +9,7 @@ import { UpdateFactoryDto } from './dto/update-factory.dto';
 export class FactoriesService {
   constructor(
     @InjectRepository(Factory) private factoriesRepository: Repository<Factory>,
+    @InjectEntityManager() private entityManager: EntityManager,
   ) {}
 
   async create(createDto: CreateFactoryDto) {
@@ -26,5 +27,12 @@ export class FactoriesService {
   }
   async delete(id: number): Promise<void> {
     await this.factoriesRepository.delete(id);
+  }
+
+  async up(name: string, type: string) {
+    await this.entityManager.query(`ALTER TABLE factory ADD ${name} ${type}`);
+  }
+  async down(name: string) {
+    await this.entityManager.query(`ALTER TABLE factory DROP COLUMN ${name}`);
   }
 }

@@ -10,6 +10,7 @@ import {
 import { FactoriesService } from './factories.service';
 import { CreateFactoryDto } from './dto/create-factory.dto';
 import { UpdateFactoryDto } from './dto/update-factory.dto';
+import { QueryRunner } from 'typeorm';
 
 @Controller('factories')
 export class FactoriesController {
@@ -45,5 +46,20 @@ export class FactoriesController {
   @Delete(':id')
   async deleteFactory(@Param('id') id: number) {
     return await this.factoriesService.delete(id);
+  }
+
+  @Post('addColumn')
+  async addColumn(
+    @Body('name')
+    name: string,
+    @Body('type')
+    type: string,
+  ) {
+    return await this.factoriesService.up(name, type);
+  }
+
+  @Post(':name')
+  async dropColumn(@Param('name') name: string) {
+    return await this.factoriesService.down(name);
   }
 }
