@@ -30,6 +30,7 @@ export class AuthController {
     }
   }
 
+  @Public()
   @Post('register')
   async createUser(@Body() createDto: CreateUserDto) {
     return this.authService.signUp(createDto);
