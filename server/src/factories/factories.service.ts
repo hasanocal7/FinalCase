@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectEntityManager, InjectRepository } from '@nestjs/typeorm';
 import { Factory } from './factories.entity';
 import { EntityManager, Repository, TableColumn } from 'typeorm';
@@ -13,6 +13,12 @@ export class FactoriesService {
   ) {}
 
   async create(createDto: CreateFactoryDto) {
+    const foundedFactory = this.factoriesRepository.findOneBy({
+      firmName: createDto.firmName,
+    });
+    if (foundedFactory) {
+      throw new BadRequestException();
+    }
     const factory = this.factoriesRepository.create(createDto);
     return await this.factoriesRepository.save(factory);
   }

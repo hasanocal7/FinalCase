@@ -1,6 +1,6 @@
 import { UpdateUserDto } from './dto/update-user.dto';
 import { CreateUserDto } from './dto/create-user.dto';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 
 @Injectable()
@@ -15,6 +15,21 @@ export class UsersService {
       password: createUserDto.password,
       authority: createUserDto.authority,
     };
+
+    let results = await this.elasticsearchService.search({
+      index: this.index,
+      query: {
+        match_all: {},
+      },
+    });
+    const users = results.hits.hits;
+    const user = users.find(
+      (user) => user._source['email'] === createUserDto.email,
+    );
+
+    if (user) {
+      throw new BadRequestException();
+    }
 
     await this.elasticsearchService.index({
       index: this.index,
@@ -73,6 +88,10 @@ export class UsersService {
     });
     const users = results.hits.hits;
     const user = users.find((user) => user._source['email'] === body['email']);
-    return user._id;
+    if (!user) {
+      throw new BadRequestException();
+    } else {
+      return user._id;
+    }
   }
 }
