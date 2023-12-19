@@ -28,7 +28,7 @@ export class UsersService {
     );
 
     if (user) {
-      throw new BadRequestException();
+      throw new BadRequestException('User already exists');
     }
 
     await this.elasticsearchService.index({
