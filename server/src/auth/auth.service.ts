@@ -5,7 +5,7 @@ import { UsersService } from 'src/users/users.service';
 import { v4 as uuidv4 } from 'uuid';
 
 const AccessTokenSignOptions: JwtSignOptions = {
-  expiresIn: '15m',
+  expiresIn: '1d',
 };
 const RefreshTokenSignOptions: JwtSignOptions = {
   expiresIn: '1d',
