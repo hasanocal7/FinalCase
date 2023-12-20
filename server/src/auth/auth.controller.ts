@@ -9,8 +9,8 @@ import {
   Request,
   UnauthorizedException,
   Req,
+  NotFoundException,
 } from '@nestjs/common';
-import { v4 as uuidv4 } from 'uuid';
 
 @Controller('auth')
 export class AuthController {
@@ -26,11 +26,10 @@ export class AuthController {
         refreshToken: Tokens.refreshToken,
       };
     } catch (error) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new NotFoundException('User Not Found');
     }
   }
 
-  @Public()
   @Post('register')
   async createUser(@Body() createDto: CreateUserDto) {
     return this.authService.signUp(createDto);
@@ -41,6 +40,7 @@ export class AuthController {
     return req.user;
   }
 
+  @Public()
   @Post('refresh')
   async rotateRefreshToken(@Req() req: Request) {
     try {
