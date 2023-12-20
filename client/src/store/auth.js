@@ -5,6 +5,7 @@ export const useAuthStore = defineStore("auth", {
   state: () => ({
     loggedIn: false,
     accessToken: null,
+    user: "",
   }),
   actions: {
     login(token) {
@@ -17,6 +18,9 @@ export const useAuthStore = defineStore("auth", {
     },
     setAccessToken(token) {
       this.accessToken = token;
+    },
+    setUserName(name) {
+      this.user = name;
     },
   },
 });

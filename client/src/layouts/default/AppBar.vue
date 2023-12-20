@@ -11,7 +11,9 @@
       <v-btn @click="routeSignUp">Sign Up</v-btn>
     </template>
     <template v-else>
-      <v-btn @click="routeUserSettings">{{ "Hasan" }}</v-btn>
+      <v-btn @click="routeUserSettings">{{
+        authStore.user.split("@")[0]
+      }}</v-btn>
       <v-btn @click="routeDashboard">Dashboard</v-btn>
       <v-btn @click="logout">Logout</v-btn>
     </template>
