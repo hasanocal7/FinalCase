@@ -7,12 +7,15 @@
           label="Name"
           name="name"
           :rules="nameRules"
+          autocomplete="name"
         ></v-text-field>
         <v-text-field
           v-model="email"
+          type="email"
           label="Email"
           name="email"
           :rules="emailRules"
+          autocomplete="email"
         ></v-text-field>
         <v-text-field
           v-model="password"
@@ -20,6 +23,7 @@
           name="password"
           type="password"
           :rules="passwordRules"
+          autocomplete="current-password"
         ></v-text-field>
         <v-select
           v-model="authority"
