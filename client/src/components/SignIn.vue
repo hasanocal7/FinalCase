@@ -73,16 +73,17 @@ export default {
       const { accessToken, refreshToken } = response.data;
 
       if (this.rememberMe) {
-        localStorage.setItem("Authorization", `Bearer ${refreshToken}`);
+        localStorage.setItem("accessToken", `Bearer ${accessToken}`);
+        localStorage.setItem("refreshToken", `Bearer ${refreshToken}`);
         axios.defaults.headers.post["Authorization"] = `Bearer ${accessToken}`;
       } else {
+        localStorage.setItem("accessToken", `Bearer ${accessToken}`);
         axios.defaults.headers.post["Authorization"] = `Bearer ${accessToken}`;
       }
 
       const authStore = useAuthStore();
-      authStore.setLoggedIn(true);
-
-      this.$router.push({ path: "/" });
+      authStore.login(accessToken);
+      this.$router.push({ path: "/dashboard" });
     },
 
     handleLoginError(error) {
