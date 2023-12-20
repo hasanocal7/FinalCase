@@ -13,13 +13,14 @@
     <template v-else>
       <v-btn @click="routeUserSettings">{{ "Hasan" }}</v-btn>
       <v-btn @click="routeDashboard">Dashboard</v-btn>
-      <v-btn @click="routeLogout">Logout</v-btn>
+      <v-btn @click="logout">Logout</v-btn>
     </template>
   </v-app-bar>
 </template>
 
 <script>
 import { useAuthStore } from "@/store/auth";
+import axios from "axios";
 import { useRouter } from "vue-router";
 
 export default {
@@ -41,13 +42,14 @@ export default {
     const routeUserSettings = () => {
       router.push({ path: "/user-settings" });
     };
-    const routeLogout = async () => {
-      delete (await axios.defaults.headers.common["Authorization"]);
-      const refreshToken = localStorage("Authorization");
+    const logout = () => {
+      delete axios.defaults.headers.common["Authorization"];
+      localStorage.removeItem("accessToken");
+      const refreshToken = localStorage.getItem("refreshToken");
       if (refreshToken) {
-        localStorage.removeItem("Authorization");
+        localStorage.removeItem("refreshToken");
       }
-      authStore.setLoggedIn(false);
+      authStore.logout();
       router.push({ path: "/" });
     };
 
@@ -58,8 +60,15 @@ export default {
       routeSignUp,
       routeDashboard,
       routeUserSettings,
-      routeLogout,
+      logout,
     };
+  },
+  mounted() {
+    const token = localStorage.getItem("accessToken");
+
+    if (token) {
+      this.authStore.setAccessToken(token);
+    }
   },
 };
 </script>
