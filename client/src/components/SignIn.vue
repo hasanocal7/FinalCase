@@ -62,6 +62,8 @@ export default {
           data,
           {}
         );
+        const authStore = useAuthStore();
+        authStore.setUserName(this.email);
 
         this.handleLoginSuccess(response);
       } catch (error) {
@@ -82,6 +84,7 @@ export default {
       }
 
       const authStore = useAuthStore();
+
       authStore.login(accessToken);
       this.$router.push({ path: "/dashboard" });
     },

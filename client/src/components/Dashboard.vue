@@ -91,6 +91,7 @@
                   <v-col cols="12" sm="6" md="4">
                     <v-text-field
                       v-model="editItem.unitUsing"
+                      spellcheck="false"
                       label="Unit Using"
                     ></v-text-field>
                   </v-col>
@@ -174,20 +175,21 @@ import { useAuthStore } from "@/store/auth";
 import axios from "axios";
 const authStore = useAuthStore();
 /**
- *
-dateRange
-discountPrice
-firmName
-id
-isFreeMember
-memberDate
-memberEndDate
-unitUsing
-usage
-usageFee
- */
+  *
+  dateRange
+  discountPrice
+  firmName
+  id
+  isFreeMember
+  memberDate
+  memberEndDate
+  unitUsing
+  usage
+  usageFee
+  */
 export default {
   data: () => ({
+    showExpand: false,
     name: "",
     type: "",
     expanded: [],
